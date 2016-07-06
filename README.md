@@ -10,7 +10,7 @@ Gate SSO is MFA enabled HTTP/Rest best authentication and VPN management server.
 Installation
 ----
 
-
+* Set an environment variable `GateGoogleAuthenticateURI` to https://<gate-sso-server>/profile/authenticate
 * `./doc/deployerConfigContext.xml` is a sample cas-maven-overlay config to enable this plug-in
 * It includes maven-wrapper, so just run './mvnw package' to generate target jar.
 * Then put this jar in cas configuration with package name
@@ -20,3 +20,4 @@ Todo
 ----
 1. Better documentation and all steps for writng custom MFA
 2. Example code for CAS configuration
+3. Better test
