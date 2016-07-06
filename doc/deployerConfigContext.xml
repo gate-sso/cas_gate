@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:sec="http://www.springframework.org/schema/security" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <util:map id="authenticationHandlersResolvers">
+      <entry key-ref="gateGoogleAuthenticator" value="#{null}" />
+    </util:map>
+
+    <util:list id="authenticationMetadataPopulators">
+        <ref bean="successfulHandlerMetaDataPopulator" />
+        <ref bean="rememberMeAuthenticationMetaDataPopulator" />
+    </util:list>
+
+    <context:annotation-config/>
+
+    <bean id="authenticationPolicy"
+      class="org.jasig.cas.authentication.AnyAuthenticationPolicy"
+      c:requiredHandlerName="gateGoogleAuthenticator"
+          p:tryAll="true" />
+
+    <bean id="gateGoogleAuthenticator"
+          class="com.cas_gate.gatemfa.GateGoogleAuthenticator">
+    </bean>
+
+    <bean id="attributeRepository" class="org.jasig.services.persondir.support.MergingPersonAttributeDaoImpl">
+        <property name="personAttributeDaos">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+    <alias name="jsonServiceRegistryDao" alias="serviceRegistryDao" />
+    
+    <alias name="serviceThemeResolver" alias="themeResolver" />
+    <alias name="defaultTicketRegistry" alias="ticketRegistry" />
+
+    <alias name="ticketGrantingTicketExpirationPolicy" alias="grantingTicketExpirationPolicy" />
+    <alias name="multiTimeUseOrTimeoutExpirationPolicy" alias="serviceTicketExpirationPolicy" />
+
+    <alias name="anyAuthenticationPolicy" alias="authenticationPolicy" />
+    <alias name="acceptAnyAuthenticationPolicyFactory" alias="authenticationPolicyFactory" />
+
+    <bean id="auditTrailManager" class="org.jasig.inspektr.audit.support.Slf4jLoggingAuditTrailManager" />
+
+    <bean id="healthCheckMonitor" class="org.jasig.cas.monitor.HealthCheckMonitor" p:monitors-ref="monitorsList" />
+
+    <alias name="neverThrottle" alias="authenticationThrottle" />
+
+    <util:list id="monitorsList">
+        <bean class="org.jasig.cas.monitor.MemoryMonitor" p:freeMemoryWarnThreshold="10" />
+        <bean class="org.jasig.cas.monitor.SessionMonitor"
+              p:ticketRegistry-ref="ticketRegistry"
+              p:serviceTicketCountWarnThreshold="5000"
+              p:sessionCountWarnThreshold="100000" />
+    </util:list>
+
+    <alias name="defaultPrincipalFactory" alias="principalFactory" />
+    <alias name="defaultAuthenticationTransactionManager" alias="authenticationTransactionManager" />
+    <alias name="defaultPrincipalElectionStrategy" alias="principalElectionStrategy" />
+
+</beans>
+
